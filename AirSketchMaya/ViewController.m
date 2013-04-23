@@ -47,8 +47,8 @@
     UIImage *maxImage = [UIImage imageNamed:@"SliderMaxBG.png"];
     UIImage *thumbImage = [UIImage imageNamed:@"SliderThumb.png"];
     
-    minImage = [minImage stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
-    maxImage = [maxImage stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
+    minImage = [minImage resizableImageWithCapInsets:UIEdgeInsetsMake(0, 3, 0, 3)];
+    maxImage = [maxImage resizableImageWithCapInsets:UIEdgeInsetsMake(0, 3, 0, 3)];
     
     [self.simplifySlider setMinimumTrackImage:minImage forState:UIControlStateNormal];
     [self.simplifySlider setMaximumTrackImage:maxImage forState:UIControlStateNormal];
@@ -374,7 +374,7 @@
     UISlider *slider = (UISlider *) sender;
     int stepValue = (int)((slider.maximumValue+1)-slider.value);
     
-    NSLog(@"%d", stepValue);
+    //NSLog(@"%d", stepValue);
     
     //send simplify command
     NSString *initResponse = [NSString stringWithFormat:@"import AirSketch as air\nair.simplifyCurve(%d)", stepValue];
