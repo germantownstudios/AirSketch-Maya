@@ -45,7 +45,7 @@
 						<array class="NSMutableArray" key="NSSubviews">
 							<object class="IBUIImageView" id="525888395">
 								<reference key="NSNextResponder" ref="240301268"/>
-								<int key="NSvFlags">274</int>
+								<int key="NSvFlags">290</int>
 								<string key="NSFrameSize">{320, 50}</string>
 								<reference key="NSSuperview" ref="240301268"/>
 								<reference key="NSWindow"/>
@@ -352,6 +352,7 @@
 								<string key="NSFrame">{{210, 340}, {100, 120}}</string>
 								<reference key="NSSuperview" ref="240301268"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -371,7 +372,7 @@
 							<object class="IBUIButton" id="698157744">
 								<reference key="NSNextResponder" ref="240301268"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{0, 120}, {320, 360}}</string>
+								<string key="NSFrame">{{0, 120}, {320, 448}}</string>
 								<reference key="NSSuperview" ref="240301268"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="37938597"/>
@@ -390,7 +391,7 @@
 								<reference key="IBUINormalTitleShadowColor" ref="167593055"/>
 								<object class="NSCustomResource" key="IBUINormalImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">Cover.png</string>
+									<string key="NSResourceName">Cover-568h@2x.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="230770847"/>
 								<reference key="IBUIFont" ref="759214860"/>
@@ -731,16 +732,15 @@
 						<reference key="parent" ref="240301268"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">536</int>
-						<reference key="object" ref="698157744"/>
-						<array class="NSMutableArray" key="children"/>
-						<reference key="parent" ref="240301268"/>
-						<string key="objectName">cover</string>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">570</int>
 						<reference key="object" ref="569917088"/>
 						<reference key="parent" ref="240301268"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">536</int>
+						<reference key="object" ref="698157744"/>
+						<reference key="parent" ref="240301268"/>
+						<string key="objectName">cover</string>
 					</object>
 				</array>
 			</object>
@@ -892,7 +892,7 @@
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="ConnectCover.png">{227, 30}</string>
 			<string key="ConnectedBG.png">{300, 30}</string>
-			<string key="Cover.png">{320, 360}</string>
+			<string key="Cover-568h@2x.png">{640, 896}</string>
 			<string key="DeleteBG.png">{150, 60}</string>
 			<string key="Divider.png">{300, 1}</string>
 			<string key="NewBG.png">{150, 60}</string>

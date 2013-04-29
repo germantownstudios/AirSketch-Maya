@@ -68,6 +68,7 @@
 
 - (void)startMyMotionDetect {
     
+    self.motionManager.accelerometerUpdateInterval = .04;
     self.motionManager.deviceMotionUpdateInterval = .04;
     
     //declare variables
@@ -87,15 +88,56 @@
     __block float velZ = 0;
     __block float velZNew;
     __block float accelZ;
-
+    /*This is using the raw accelerometer data
+    [self.motionManager startAccelerometerUpdatesToQueue:[[NSOperationQueue alloc] init] withHandler:^(CMAccelerometerData *data, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            if ((fabs(data.acceleration.x)) < 0.03) {
+                posXNew = 0;
+            } else {
+                posXNew = (data.acceleration.x * -5);
+            }
+            if ((fabs(data.acceleration.y)) < 0.03) {
+                posYNew = 0;
+            } else {
+                posYNew = (data.acceleration.y * -5);
+            }
+            if ((fabs(data.acceleration.z)) < 0.05) {
+                posZNew = 0;
+            } else {
+                posZNew = (data.acceleration.z * -5);
+            }
+            
+            NSLog(@"%f, %f, %f",posXNew, posYNew, posZNew);
+    */       
     
     [self.motionManager startDeviceMotionUpdatesToQueue:[[NSOperationQueue alloc] init] withHandler:^(CMDeviceMotion *data, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             
             //declare variables (old method)
-//            float translateX = (data.userAcceleration.x * 10);
-//            float translateY = (data.userAcceleration.x * 10);
-//            float translateZ = (data.userAcceleration.z * 10);
+            
+            if ((fabs(data.userAcceleration.x)) < 0.03) {
+                posXNew = 0;
+            } else {
+                posXNew = (data.userAcceleration.x * -5);
+            }
+            if ((fabs(data.userAcceleration.y)) < 0.03) {
+                posYNew = 0;
+            } else {
+                posYNew = (data.userAcceleration.y * -5);
+            }
+            if ((fabs(data.userAcceleration.z)) < 0.05) {
+                posZNew = 0;
+            } else {
+                posZNew = (data.userAcceleration.z * -5);
+            }
+            
+            NSLog(@"%f, %f, %f",posXNew, posYNew, posZNew);
+            
+
+            //posXNew = (data.userAcceleration.x);
+            //posYNew = (data.userAcceleration.y);
+            //posZNew = (data.userAcceleration.z);
             
             //clipping lower values
 //            if ((ABS(data.userAcceleration.x))<.02) {
@@ -103,7 +145,8 @@
 //            } else {
 //                accelX = data.userAcceleration.x;
 //            }
-            
+     
+            /*
             accelX = data.userAcceleration.x;
             accelY = data.userAcceleration.y;
             accelZ = data.userAcceleration.z;
@@ -116,22 +159,24 @@
             
             posZNew = ((.5*((accelZ*9.81)*100))*(pow(time,2)))+(velZ*time)+posZ;
             velZNew = (accelZ*9.81*100*time)+velZ;
-            
+            */
             //log new mapping
 //            NSLog(@"posX: %f, accelX: %f", posXNew, data.userAcceleration.x);
             
             //send move command to Maya
-            NSString *response = [NSString stringWithFormat:@"cmds.move(%.02f,%.02f,%.02f, os=True)", posXNew, posYNew, posZNew];
+            NSString *response = [NSString stringWithFormat:@"cmds.move(%.02f,%.02f,%.02f, os=True, r=True)", posXNew, posYNew, posZNew];
             NSData *message = [[NSData alloc] initWithData:[response dataUsingEncoding:NSASCIIStringEncoding]];
             [outputStream write:[message bytes] maxLength:[message length]];
                                           
             //increment
+            /*
             velX = velXNew;
             posX = posXNew;
             velY = velYNew;
             posY = posYNew;
             velZ = velZNew;
             posZ = posZNew;
+            */
             
         });
     }];
@@ -302,6 +347,9 @@
     [UIView animateWithDuration:0.5 animations:^{
         CGAffineTransform slide = CGAffineTransformMakeTranslation(0, 130);
         cover.transform = slide;}];
+    
+    [self.simplifySlider setValue:1];
+    _brushTextField.text = @"blue neon";
     
 }
 

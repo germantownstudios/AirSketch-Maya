@@ -22,6 +22,7 @@
 		881561FC17131B8200A62321 /* AbstractActionSheetPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 881561F817131B8200A62321 /* AbstractActionSheetPicker.m */; };
 		881561FD17131B8200A62321 /* ActionSheetStringPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 881561FA17131B8200A62321 /* ActionSheetStringPicker.m */; };
 		881561FF171320EB00A62321 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 881561FE171320EB00A62321 /* CoreMotion.framework */; };
+		88768346172E013A006BA8E7 /* Cover-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 88768345172E013A006BA8E7 /* Cover-568h@2x.png */; };
 		889E9D891726138100189808 /* ConnectCover.png in Resources */ = {isa = PBXBuildFile; fileRef = 889E9D851726138100189808 /* ConnectCover.png */; };
 		889E9D8A1726138100189808 /* ConnectCover@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 889E9D861726138100189808 /* ConnectCover@2x.png */; };
 		889E9D8B1726138100189808 /* ConnectedBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 889E9D871726138100189808 /* ConnectedBG.png */; };
@@ -85,6 +86,7 @@
 		881561F917131B8200A62321 /* ActionSheetStringPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionSheetStringPicker.h; sourceTree = "<group>"; };
 		881561FA17131B8200A62321 /* ActionSheetStringPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionSheetStringPicker.m; sourceTree = "<group>"; };
 		881561FE171320EB00A62321 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		88768345172E013A006BA8E7 /* Cover-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Cover-568h@2x.png"; sourceTree = "<group>"; };
 		889E9D851726138100189808 /* ConnectCover.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ConnectCover.png; sourceTree = "<group>"; };
 		889E9D861726138100189808 /* ConnectCover@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ConnectCover@2x.png"; sourceTree = "<group>"; };
 		889E9D871726138100189808 /* ConnectedBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ConnectedBG.png; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 		881561BD17130F5500A62321 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				88768345172E013A006BA8E7 /* Cover-568h@2x.png */,
 				889E9D851726138100189808 /* ConnectCover.png */,
 				889E9D861726138100189808 /* ConnectCover@2x.png */,
 				889E9D871726138100189808 /* ConnectedBG.png */,
@@ -353,6 +356,7 @@
 				889E9D8A1726138100189808 /* ConnectCover@2x.png in Resources */,
 				889E9D8B1726138100189808 /* ConnectedBG.png in Resources */,
 				889E9D8C1726138100189808 /* ConnectedBG@2x.png in Resources */,
+				88768346172E013A006BA8E7 /* Cover-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
