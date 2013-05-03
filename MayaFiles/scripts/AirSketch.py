@@ -38,22 +38,25 @@ def headsUp():
 def createLoc():
     cmds.currentTime(1)
     cmds.playbackOptions(min=1,max=100)
+    if(cmds.objExists('drawLoc')):
+        cmds.delete('drawLoc')
     cmds.spaceLocator(name='drawLoc')
     cmds.aimConstraint('persp','drawLoc',aim=[0,0,1])
     cmds.delete('drawLoc_aimConstraint1')
-    cmds.delete('newCurve')
-    cmds.delete('rebuildCurve1')
+    if(cmds.objExists('newCurve')):
+        cmds.delete('newCurve')
+    if(cmds.objExists('rebuildCurve1')):
+        cmds.delete('rebuildCurve1')
 
 #set attributes of selected object to record
 def recordMotion():
-    cmds.select('drawLoc')
-    cmds.recordAttr(at=['translateX','translateY','translateZ'])
-    cmds.play(rec=True)
+    cmds.setKeyframe('drawLoc', at='translateX')
+    cmds.setKeyframe('drawLoc', at='translateY')
+    cmds.setKeyframe('drawLoc', at='translateZ')
+    cmds.currentTime((cmds.currentTime(query=True))+1)
 
 #stop playback
 def stopRecord():
-    while (cmds.play(q=True, state=True)):
-        cmds.play(state=False)
     createCurve()
 
 #get node
@@ -65,16 +68,14 @@ def getNode(nodeType):
 def getParentNode(node):
     parentNodeList = cmds.listRelatives(node, p=True)
     parentNode = parentNodeList[-1]
-    return parentNode
+    return parentNode 
 
 #create curve from object
 def createCurve():
     #delete recording and create motion trail
     cmds.currentTime(1)
-    cmds.select('drawLoc')
-    cmds.recordAttr(delete=True)
-    maxTime = cmds.playbackOptions(query=True,max=True)
-    cmds.snapshot(mt=True, et=maxTime)
+    maxKeys = cmds.keyframe('drawLoc.translateX', query=True, keyframeCount=True)
+    cmds.snapshot('drawLoc', mt=True, et=maxKeys)
 
     #select current motion trail
     trail = getNode('motionTrail')
@@ -93,10 +94,10 @@ def createCurve():
     #rebuild curve
     curve = getParentNode(getNode('nurbsCurve'))  
     cmds.select(curve)
-    cmds.rebuildCurve(s=100,n='newCurve',ch=True, rpo=False)
-    #cmds.setAttr('{curve}.visibility', false)    
+    cmds.rebuildCurve(s=maxKeys,n='newCurve',ch=True, rpo=False)
     
-    #select curve  
+    #select curve
+    curve = getNode('nurbsCurve')
     cmds.select(curve)
     
     #blue neon brush
@@ -107,10 +108,20 @@ def createCurve():
     
     #select curve again for editing
     cmds.select(curve)
-    
+    cmds.setToolTo('selectSuperContext')
+
+def getOriginalCurveSpans():
+    nodeList = cmds.ls(et='nurbsCurve', tr=True)
+    node = nodeList[-2]
+    maxSpans = cmds.getAttr(node + '.spans')
+    return maxSpans
+
 def simplifyCurve(stepValue):
-    spans = int(stepValue*10)
+    cmds.undoInfo(openChunk=True)
+    maxSpans = getOriginalCurveSpans()
+    spans = int(round(((stepValue*(maxSpans-4))/10)+4))
     cmds.setAttr('rebuildCurve1.spans',spans)
+    cmds.undoInfo(closeChunk=True)
     
  #brushes    
 def blueNeon():
@@ -147,7 +158,7 @@ def noBrush():
 
 brushDefList = [blueNeon, redOil, orangePastel, blackCharcoal, yellowYarn, ballpointPen, redInk, orangeOil, greenDrybrush, noBrush]
 
-#attach brush to curve    
+#attach brush to curve
 def attachBrush(brushIndex):
     #delete current brush and stroke, select curve
     brush = getNode('brush')
@@ -159,23 +170,24 @@ def attachBrush(brushIndex):
     #get brush from index
     brushDefList[brushIndex]()
      
-     #attach brush
+    #attach brush
     cmds.AttachBrushToCurves()
+    
+    cmds.setToolTo('selectSuperContext')
 
 def deleteCurve():
-    brush = getNode('brush')
-    curve = getNode('nurbsCurve')
-    stroke = getNode('stroke')
-    cmds.delete(brush, curve, stroke)
-    
-#def deleteCurve():
-#    brushList = cmds.ls(et='brush')
-#    brush = brushList[-1]
-#    curveList = cmds.ls('curve*', tr=True)
-#    curve = curveList[-1]
-#    strokeList = cmds.ls('stroke*', tr=True)
-#    stroke = strokeList[-1]
-#    cmds.delete(brush, curve, stroke)
+    cmds.undoInfo(openChunk=True)
+    try:
+        if(cmds.objExists('drawLoc')):
+            cmds.delete('drawLoc')
+        else:
+            brush = getNode('brush')
+            originalCurve = (cmds.listRelatives((cmds.ls(et='nurbsCurve', tr=True))[-2],p=True))
+            curve = getParentNode(getNode('nurbsCurve'))
+            stroke = getParentNode(getNode('stroke'))
+            cmds.delete(brush, originalCurve, curve, stroke)
+    finally:
+        cmds.undoInfo(closeChunk=True)
 
 #render into new window
 def renderImage():

@@ -13,6 +13,7 @@
 	NSInputStream	*inputStream;
 	NSOutputStream	*outputStream;
     IBOutlet UISlider *simplifySlider;
+    NSTimer *recordTimer;
 }
 
 
@@ -34,13 +35,12 @@
 - (IBAction)startDraw:(id)sender;
 - (IBAction)startRecord:(id)sender;
 - (IBAction)stopRecord:(id)sender;
-- (IBAction)createCurve:(id)sender;
 - (IBAction)selectBrush:(id)sender;
 - (IBAction)renderImage:(id)sender;
 - (IBAction)startTransform:(id)sender;
 - (IBAction)simplifyCurve:(id)sender;
 - (IBAction)stopTransform:(id)sender;
 - (IBAction)deleteCurve:(id)sender;
-- (IBAction)saveScene:(id)sender;
+- (IBAction)undo:(id)sender;
 
 @end

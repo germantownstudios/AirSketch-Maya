@@ -68,138 +68,91 @@
 
 - (void)startMyMotionDetect {
     
-    self.motionManager.accelerometerUpdateInterval = .04;
-    self.motionManager.deviceMotionUpdateInterval = .04;
+    self.motionManager.deviceMotionUpdateInterval = .08;
     
     //declare variables
-    float time = .04;
-    __block float posX = 0;
-    __block float posXNew;
+    __block float time;
+    __block float timeOld;
     __block float velX = 0;
     __block float velXNew;
     __block float accelX;
-    __block float posY = 0;
-    __block float posYNew;
     __block float velY = 0;
     __block float velYNew;
     __block float accelY;
-    __block float posZ = 0;
-    __block float posZNew;
     __block float velZ = 0;
     __block float velZNew;
     __block float accelZ;
-    /*This is using the raw accelerometer data
-    [self.motionManager startAccelerometerUpdatesToQueue:[[NSOperationQueue alloc] init] withHandler:^(CMAccelerometerData *data, NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            if ((fabs(data.acceleration.x)) < 0.03) {
-                posXNew = 0;
-            } else {
-                posXNew = (data.acceleration.x * -5);
-            }
-            if ((fabs(data.acceleration.y)) < 0.03) {
-                posYNew = 0;
-            } else {
-                posYNew = (data.acceleration.y * -5);
-            }
-            if ((fabs(data.acceleration.z)) < 0.05) {
-                posZNew = 0;
-            } else {
-                posZNew = (data.acceleration.z * -5);
-            }
-            
-            NSLog(@"%f, %f, %f",posXNew, posYNew, posZNew);
-    */       
-    
+    __block BOOL firstTime = TRUE;
+       
     [self.motionManager startDeviceMotionUpdatesToQueue:[[NSOperationQueue alloc] init] withHandler:^(CMDeviceMotion *data, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            //declare variables (old method)
-            
-            if ((fabs(data.userAcceleration.x)) < 0.03) {
-                posXNew = 0;
+            //get time
+            if (firstTime == TRUE) {
+                time = 0.08;
+                firstTime = FALSE;
             } else {
-                posXNew = (data.userAcceleration.x * -5);
-            }
-            if ((fabs(data.userAcceleration.y)) < 0.03) {
-                posYNew = 0;
-            } else {
-                posYNew = (data.userAcceleration.y * -5);
-            }
-            if ((fabs(data.userAcceleration.z)) < 0.05) {
-                posZNew = 0;
-            } else {
-                posZNew = (data.userAcceleration.z * -5);
+                time = data.timestamp - timeOld;
             }
             
-            NSLog(@"%f, %f, %f",posXNew, posYNew, posZNew);
-            
-
-            //posXNew = (data.userAcceleration.x);
-            //posYNew = (data.userAcceleration.y);
-            //posZNew = (data.userAcceleration.z);
-            
-            //clipping lower values
-//            if ((ABS(data.userAcceleration.x))<.02) {
-//                accelX = 0.00;
-//            } else {
-//                accelX = data.userAcceleration.x;
-//            }
-     
-            /*
+            //set acceleration (clip low values)
             accelX = data.userAcceleration.x;
             accelY = data.userAcceleration.y;
             accelZ = data.userAcceleration.z;
             
-            posXNew = ((.5*((accelX*9.81)*100))*(pow(time,2)))+(velX*time)+posX;
-            velXNew = (accelX*9.81*100*time)+velX;
+            if (fabs(accelX) < 0.1) {
+                accelX = 0;
+            }
+            if (fabs(accelY) < 0.1) {
+                accelY = 0;
+            }
+            if (fabs(accelZ) < 0.1) {
+                accelZ = 0;
+            }
             
-            posYNew = ((.5*((accelY*9.81)*100))*(pow(time,2)))+(velY*time)+posY;
-            velYNew = (accelY*9.81*100*time)+velY;
+            //calculate velocity (set constant velocity to 0)
+            velXNew = accelX * -10 * time + velX;
+            velYNew = accelY * 5 * time + velY; //Y is reversed for some reason
+            velZNew = accelZ * -10 * time + velZ;
             
-            posZNew = ((.5*((accelZ*9.81)*100))*(pow(time,2)))+(velZ*time)+posZ;
-            velZNew = (accelZ*9.81*100*time)+velZ;
-            */
-            //log new mapping
-//            NSLog(@"posX: %f, accelX: %f", posXNew, data.userAcceleration.x);
+            if (fabs(velXNew - velX) < 0.1) {
+                velXNew = 0;
+            }
+            if (fabs(velYNew - velY) < 0.1) {
+                velYNew = 0;
+            }
+            if (fabs(velZNew - velZ) < 0.1) {
+                velZNew = 0;
+            }
             
-            //send move command to Maya
-            NSString *response = [NSString stringWithFormat:@"cmds.move(%.02f,%.02f,%.02f, os=True, r=True)", posXNew, posYNew, posZNew];
+            //send move command to Maya (note Z and Y are switched due to the way most people hold their phones)
+            NSString *response = [NSString stringWithFormat:@"cmds.move(%.02f,%.02f,%.02f, os=True, r=True)", velXNew, velZNew, velYNew];
             NSData *message = [[NSData alloc] initWithData:[response dataUsingEncoding:NSASCIIStringEncoding]];
             [outputStream write:[message bytes] maxLength:[message length]];
                                           
             //increment
-            /*
             velX = velXNew;
-            posX = posXNew;
             velY = velYNew;
-            posY = posYNew;
             velZ = velZNew;
-            posZ = posZNew;
-            */
-            
+            timeOld = data.timestamp;
+
         });
     }];
 }
 
 - (void)startTransformDetect {
     
-    self.motionManager.deviceMotionUpdateInterval = .04;
+    self.motionManager.deviceMotionUpdateInterval = .08;
     
     [self.motionManager startDeviceMotionUpdatesToQueue:[[NSOperationQueue alloc] init] withHandler:^(CMDeviceMotion *data, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            
-            //declare variables
-            float translateX = (data.userAcceleration.x * 10);
-            float translateY = (data.userAcceleration.y * 10);
-            float translateZ = (data.userAcceleration.z * 10);
             float rotateX = (data.attitude.pitch * 57.295);
             float rotateY = (data.attitude.yaw * 57.295);
-            float rotateZ = (data.attitude.roll * 57.295);
+            float rotateZ = (data.attitude.roll * -57.295);
             
             //send rotate command to Maya
-            NSString *response = [NSString stringWithFormat:@"cmds.move(%.02f,%.02f,%.02f, objectSpace=True)\ncmds.rotate(%.02f,%.02f,%.02f, cp=True)", translateX, translateY, translateZ, rotateX, rotateY, rotateZ];
+            NSString *response = [NSString stringWithFormat:@"cmds.rotate(%.02f,%.02f,%.02f, cp=True)", rotateX, rotateY, rotateZ];
             NSData *message = [[NSData alloc] initWithData:[response dataUsingEncoding:NSASCIIStringEncoding]];
             [outputStream write:[message bytes] maxLength:[message length]];
         });
@@ -236,7 +189,7 @@
 	switch (streamEvent) {
             
 		case NSStreamEventOpenCompleted:{
-			NSLog(@"Stream opened");
+			//NSLog(@"Stream opened");
             [UIView animateWithDuration:0.5 animations:^{
                                  CGAffineTransform coverSlide = CGAffineTransformMakeTranslation(0, 130);
                                  cover.transform = coverSlide;}];
@@ -269,11 +222,12 @@
             break;
             
 		case NSStreamEventErrorOccurred:
-			NSLog(@"Can not connect to the host!");
+			//NSLog(@"StreamEventError");
             [self connectError];
 			break;
             
 		case NSStreamEventEndEncountered:
+			//NSLog(@"StreamEventEnd");
             [self connectError];
 			break;
             
@@ -354,6 +308,10 @@
 }
 
 - (IBAction)startRecord:(id)sender {
+    recordTimer = [NSTimer scheduledTimerWithTimeInterval:.04 target:self selector:@selector(sendRecord) userInfo:nil repeats:YES];
+}
+
+- (void)sendRecord {
     //send record commands
     NSString *initResponse = [NSString stringWithFormat:@"import AirSketch as air\nair.recordMotion()"];
     NSData *initData = [[NSData alloc] initWithData:[initResponse dataUsingEncoding:NSASCIIStringEncoding]];
@@ -361,11 +319,14 @@
 }
 
 - (IBAction)stopRecord:(id)sender {
+    //stop timer
+    [recordTimer invalidate];
+    
     //stop sending deviceMotion
     [self.motionManager stopDeviceMotionUpdates];
     
     //send record commands
-    NSString *initResponse = [NSString stringWithFormat:@"import maya.cmds as cmds\nimport AirSketch as air\ncmds.play(state=False)\nair.createCurve()"];
+    NSString *initResponse = [NSString stringWithFormat:@"import maya.cmds as cmds\nimport AirSketch as air\nair.stopRecord()"];
     NSData *initData = [[NSData alloc] initWithData:[initResponse dataUsingEncoding:NSASCIIStringEncoding]];
     [outputStream write:[initData bytes] maxLength:[initData length]];
     
@@ -373,16 +334,6 @@
         CGAffineTransform slide = CGAffineTransformMakeTranslation(0, 360);
         cover.transform = slide;}];
     
-}
-
-- (IBAction)createCurve:(id)sender {
-    //stop sending deviceMotion
-    [self.motionManager stopDeviceMotionUpdates];
-    
-    //send create curve commands
-    NSString *initResponse = [NSString stringWithFormat:@"import AirSketch as air\nair.createCurve()"];
-    NSData *initData = [[NSData alloc] initWithData:[initResponse dataUsingEncoding:NSASCIIStringEncoding]];
-    [outputStream write:[initData bytes] maxLength:[initData length]];
 }
 
 - (IBAction)selectBrush:(id)sender {
@@ -413,7 +364,7 @@
 }
 
 - (IBAction)startTransform:(id)sender {
-    //start getting
+    //start transforming curve
     [self startTransformDetect];
 }
 
@@ -421,8 +372,6 @@
     
     UISlider *slider = (UISlider *) sender;
     int stepValue = (int)((slider.maximumValue+1)-slider.value);
-    
-    //NSLog(@"%d", stepValue);
     
     //send simplify command
     NSString *initResponse = [NSString stringWithFormat:@"import AirSketch as air\nair.simplifyCurve(%d)", stepValue];
@@ -444,10 +393,10 @@
     [outputStream write:[initData bytes] maxLength:[initData length]];
 }
 
-- (IBAction)saveScene:(id)sender {
+- (IBAction)undo:(id)sender {
     
-    //send save file command
-    NSString *initResponse = [NSString stringWithFormat:@"import maya.cmds as cmds\ncmds.file(save=True)"];
+    //send undo command
+    NSString *initResponse = [NSString stringWithFormat:@"import maya.cmds as cmds\ncmds.undo()"];
     NSData *initData = [[NSData alloc] initWithData:[initResponse dataUsingEncoding:NSASCIIStringEncoding]];
     [outputStream write:[initData bytes] maxLength:[initData length]];
 }
